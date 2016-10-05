@@ -22,13 +22,13 @@ class ViewController: UIViewController {
     // TODO: This looks like a good place to add some data structures.
     //       One data structure is initialized below for reference.
     var compute: [String] = []
-//    var current: String = ""
-    var num1 = 0
-    var num2 = 0
-    var symbol = ""
+//    var curr: String = ""
+    //var num1 = 0
+    //var num2 = 0
+    var op = ""
     var prev = ""
-    var current = ""
-    var second = false
+    var curr = ""
+    var num2 = false
     
 
     override func viewDidLoad() {
@@ -82,11 +82,11 @@ class ViewController: UIViewController {
     // TODO: A calculate method with no parameters, scary!
     //       Modify this one or create your own.
     func calculate() -> String {
-        if(symbol == "" || current == "" || prev == ""){
+        if(curr == "" || op == "" || prev == ""){
             return resultLabel.text!
         }
-//        return String(intCalculate(a: Int(prev)!, b: Int(current)!, operation: symbol))
-        return String(calculate(a: prev, b: current, operation: symbol))
+//        return String(intCalculate(a: Int(prev)!, b: Int(curr)!, operation: op))
+        return String(calculate(a: prev, b: curr, operation: op))
     }
     
     // TODO: A simple calculate method for integers.
@@ -135,9 +135,10 @@ class ViewController: UIViewController {
         guard Int(sender.content) != nil else { return }
         print("The number \(sender.content) was pressed")
         // Fill me in!
-        if(current.characters.count < 7){
-            current = current + sender.content
-            updateResultLabel(current)
+        //limit string to 7 digits
+        if(curr.characters.count < 7){
+            curr = curr + sender.content
+            updateResultLabel(curr)
         }
         
     }
@@ -149,37 +150,37 @@ class ViewController: UIViewController {
             let result = calculate()
             updateResultLabel(result)
             prev = result
-            current = ""
-            symbol = ""
-            second = false
+            curr = ""
+            op = ""
+            num2 = false
         }
         else if(sender.content == "C"){
-            current = ""
+            curr = ""
             prev = ""
-            symbol = ""
-            second = false
+            op = ""
+            num2 = false
             updateResultLabel("0")
          
         }
         else if (sender.content == "%"){
-            current = String(Double(current)!/100)
-            updateResultLabel(current)
+            curr = String(Double(curr)!/100)
+            updateResultLabel(curr)
         }
         else if(sender.content == "+/-"){
-            current = String(Double(current)! * (-1))
-            updateResultLabel(current)
+            curr = String(Double(curr)! * (-1))
+            updateResultLabel(curr)
         
         }
         else if(sender.content == "."){
-            current = current + "."
-            updateResultLabel(current)
+            curr = curr + "."
+            updateResultLabel(curr)
         }
         else{
-            if(!second){
-                second = true
-                //prev = current
+            if(!num2){
+                num2 = true
+                //prev = curr
                 if(prev == ""){
-                    prev = current
+                    prev = curr
                     updateResultLabel(prev)
                 }
             }
@@ -188,8 +189,8 @@ class ViewController: UIViewController {
                 updateResultLabel(result)
                 prev = result
             }
-            current = ""
-            symbol = sender.content
+            curr = ""
+            op = sender.content
 
         }
     }
