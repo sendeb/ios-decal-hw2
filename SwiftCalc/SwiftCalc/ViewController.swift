@@ -22,7 +22,13 @@ class ViewController: UIViewController {
     // TODO: This looks like a good place to add some data structures.
     //       One data structure is initialized below for reference.
     var compute: [String] = []
-    var curr: [String] = []
+//    var current: String = ""
+    var num1 = 0
+    var num2 = 0
+    var symbol = ""
+    var prev = ""
+    var current = ""
+    var second = false
     
 
     override func viewDidLoad() {
@@ -52,17 +58,23 @@ class ViewController: UIViewController {
     
     // TODO: Ensure that resultLabel gets updated.
     //       Modify this one or create your own.
-    func updateResultLabel(_ content: [String]) {
+    func updateResultLabel(_ content: String) {
         print("Update me like one of those PCs")
         print (content)
-        var result = ""
-        for i in content{
-            result = result + i
-            if(result.characters.count == 7){
-                break
+
+        if(content != "." && content != "0")
+        {
+            let num_double = Double(content)!
+            if(num_double - Double(Int(num_double)) == 0){
+                resultLabel.text = String(Int(num_double))
+            }
+            else{
+                resultLabel.text = content
             }
         }
-        resultLabel.text = result
+        else{
+            resultLabel.text = content
+        }
         
     }
     
@@ -70,27 +82,11 @@ class ViewController: UIViewController {
     // TODO: A calculate method with no parameters, scary!
     //       Modify this one or create your own.
     func calculate() -> String {
-        var curr1 = ""
-        var int1 = 0
-        var int2 = 0
-        var op = ""
-        for i in compute{
-            if(i == "+" || i == "-" || i == "*" || i == "/"){
-                op = i
-                int1 = Int(curr1)!
-                curr1 = ""
-            }
-            else if(i == "="){
-                int2 = Int(curr1)!
-                //compute = [""]
-                return String(intCalculate(a: int1, b: int2, operation: op))
-            }
-            
-            else{
-                curr1 += i
-            }
+        if(symbol == "" || current == "" || prev == ""){
+            return resultLabel.text!
         }
-        return "0"
+//        return String(intCalculate(a: Int(prev)!, b: Int(current)!, operation: symbol))
+        return String(calculate(a: prev, b: current, operation: symbol))
     }
     
     // TODO: A simple calculate method for integers.
@@ -117,6 +113,20 @@ class ViewController: UIViewController {
     //       Modify this one or create your own.
     func calculate(a: String, b:String, operation: String) -> Double {
         print("Calculation requested for \(a) \(operation) \(b)")
+        let c = Double(a)!
+        let d = Double(b)!
+        switch operation {
+            case "+":
+                return c+d
+            case "-":
+                return c-d
+            case "/":
+                return c/d
+            case "*":
+                return c*d
+            default:
+                return 0.0
+        }
         return 0.0
     }
     
@@ -125,10 +135,9 @@ class ViewController: UIViewController {
         guard Int(sender.content) != nil else { return }
         print("The number \(sender.content) was pressed")
         // Fill me in!
-        if(curr.count < 7){
-            compute.append(sender.content)
-            curr.append(sender.content)
-            updateResultLabel(curr)
+        if(current.characters.count < 7){
+            current = current + sender.content
+            updateResultLabel(current)
         }
         
     }
@@ -136,26 +145,53 @@ class ViewController: UIViewController {
     // REQUIRED: The responder to an operator button being pressed.
     func operatorPressed(_ sender: CustomButton) {
         // Fill me in!
-        curr = []
         if(sender.content == "="){
-            compute.append(sender.content)
             let result = calculate()
-            updateResultLabel([result])
-            compute = [result]
-            print (compute)
-            print (calculate())
+            updateResultLabel(result)
+            prev = result
+            current = ""
+            symbol = ""
+            second = false
         }
         else if(sender.content == "C"){
-            print ("in here")
-            updateResultLabel(["0"])
-            compute = []
-            curr = []
+            current = ""
+            prev = ""
+            symbol = ""
+            second = false
+            updateResultLabel("0")
+         
         }
+        else if (sender.content == "%"){
+            current = String(Double(current)!/100)
+            updateResultLabel(current)
+        }
+        else if(sender.content == "+/-"){
+            current = String(Double(current)! * (-1))
+            updateResultLabel(current)
         
+        }
+        else if(sender.content == "."){
+            current = current + "."
+            updateResultLabel(current)
+        }
         else{
-            compute.append(sender.content)
+            if(!second){
+                second = true
+                //prev = current
+                if(prev == ""){
+                    prev = current
+                    updateResultLabel(prev)
+                }
+            }
+            else{
+                let result = calculate()
+                updateResultLabel(result)
+                prev = result
+            }
+            current = ""
+            symbol = sender.content
+
         }
-        
     }
     
     // REQUIRED: The responder to a number or operator button being pressed.
